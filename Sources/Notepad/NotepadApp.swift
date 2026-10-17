@@ -42,13 +42,12 @@ struct MainWindowView: View {
             }
             .padding(.bottom, 24)
 
-            ZStack(alignment: .topLeading) {
+            ZStack {
                 if fullPadText.isEmpty {
                     Text("Start writing")
                         .font(.system(size: 15))
                         .foregroundStyle(AppStyle.muted.opacity(0.7))
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 9)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .allowsHitTesting(false)
                 }
                 TextEditor(text: $fullPadText)
@@ -126,7 +125,7 @@ private struct QuickNoteWindowView: View {
             DispatchQueue.main.async {
                 if let window = NSApp.windows.first(where: { $0.title == "Quick Note" }) {
                     window.level = .floating
-                    window.collectionBehavior.insert(.canJoinAllSpaces)
+                    window.collectionBehavior.insert([.canJoinAllSpaces, .fullScreenAuxiliary])
                     window.isReleasedWhenClosed = false
                 }
             }
