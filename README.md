@@ -4,51 +4,32 @@ A minimal native macOS notes app with a clean notepad and a compact floating Qui
 
 ## Download and install
 
-The GitHub Actions workflow automatically builds a **DMG installer** whenever code is pushed to `main`.
+Download the **v1.0 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/macos-notes/releases/latest).
 
-1. Open the [Actions tab](../../actions/workflows/build-macos.yml).
-2. Select the latest successful **Build macOS app** run.
-3. Under **Artifacts**, download `quicknote-installer`.
-4. Open the downloaded artifact ZIP to extract `quicknote-macOS.dmg`.
-5. Open the DMG and drag `quicknote.app` onto the Applications shortcut shown in the window.
-6. Eject the disk image and launch quicknote from Applications.
+1. Download the installer ZIP asset.
+2. Double-click the ZIP to extract `quicknote-macOS.dmg`.
+3. Open the DMG.
+4. Drag `quicknote.app` onto the **Applications** shortcut in the installer window.
+5. Eject the disk image, then launch quicknote from Applications.
 
-You do not need Xcode to install or use the app. The app is ad-hoc signed to help macOS validate the bundle, but it is not signed with an Apple Developer ID or notarized. Depending on your macOS security settings, you may still need to allow it manually the first time.
-
-Then try opening it again. This removes the download quarantine flag from this app only; do this only for software you trust. A Developer ID signature and notarization would avoid this warning, but require an Apple Developer distribution setup.
+**You do not need Xcode, Swift, Terminal, or any development tools to install or use quicknote.**
 
 **Requirement:** macOS 13 Ventura or later.
 
+The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. macOS may show a security warning on first launch. If that happens, use macOS **System Settings → Privacy & Security** to review the blocked app and allow it only if you trust the download. A Developer ID signature and notarization would avoid this warning, but require an Apple Developer distribution setup.
+
 ## Features
 
-- **Notepad:** a spacious writing area with only the title and a simple "Start writing" placeholder.
-- **Floating Quick Note:** use the toolbar button to open a small window configured to stay above other windows, including fullscreen Spaces.
+- **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
+- **Floating Quick Note:** a compact window designed to stay above other windows, including fullscreen Spaces.
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
 - **Dark interface:** native SwiftUI with a purple accent.
 
-## Build locally
-
-On a Mac with Apple's Swift toolchain installed:
-
-```bash
-git clone https://github.com/waynetay/macos-notes.git
-cd macos-notes
-bash scripts/build-app.sh
-open dist/quicknote.app
-```
-
 ## Storage
 
 Notes are stored locally in macOS UserDefaults under separate keys for the main Notepad and floating Quick Note. Uninstalling the app does not necessarily remove saved preferences.
-
-## Project structure
-
-- `Package.swift` — Swift package definition.
-- `Sources/Notepad/NotepadApp.swift` — app interface and note persistence.
-- `scripts/build-app.sh` — packages the executable as `quicknote.app` and creates a DMG installer.
-- `.github/workflows/build-macos.yml` — builds and uploads the installer artifact.
 
 ## License
 
