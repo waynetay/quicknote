@@ -103,12 +103,13 @@ private struct QuickNoteWindowView: View {
                 .fill(Color.white.opacity(0.08))
                 .frame(height: 1)
 
-            ZStack(alignment: .topLeading) {
+            ZStack {
                 if quickNoteText.isEmpty {
                     Text("What's on your mind?")
+                        .font(.system(size: 14))
                         .foregroundStyle(AppStyle.muted.opacity(0.75))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .multilineTextAlignment(.center)
                         .allowsHitTesting(false)
                 }
                 TextEditor(text: $quickNoteText)
