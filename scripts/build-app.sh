@@ -8,9 +8,15 @@ echo "Building quicknote for macOS…"
 swift build -c release
 
 APP="dist/quicknote.app"
-mkdir -p "$APP/Contents/MacOS"
+ICONSET="dist/quicknote.iconset"
+mkdir -p "$APP/Contents/MacOS" dist
 
 cp ".build/release/quicknote" "$APP/Contents/MacOS/quicknote"
+
+# Render the vector icon at all standard macOS icon sizes and bundle it as ICNS.
+swift scripts/create-icon.swift Resources/AppIcon.svg "$ICONSET"
+iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
+rm -rf "$ICONSET"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -27,6 +33,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <string>quicknote</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>NSHighResolutionCapable</key>
