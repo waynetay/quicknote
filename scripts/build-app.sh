@@ -14,7 +14,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" dist
 cp ".build/release/quicknote" "$APP/Contents/MacOS/quicknote"
 
 # Render the vector icon at all standard macOS icon sizes and bundle it as ICNS.
-swift scripts/create-icon.swift Resources/AppIcon.svg "$ICONSET"
+swift scripts/create-icon.swift Resources/AppIcon.png "$ICONSET"
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 rm -rf "$ICONSET"
 
