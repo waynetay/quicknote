@@ -37,6 +37,11 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
+# Apply an ad-hoc signature so macOS can validate the app bundle's code.
+# This is not an Apple Developer ID signature and does not notarize the app.
+codesign --force --deep --sign - "$APP"
+codesign --verify --deep --strict "$APP"
+
 # Create a drag-and-drop disk image installer.
 mkdir -p dist/dmg-staging
 cp -R "$APP" dist/dmg-staging/
