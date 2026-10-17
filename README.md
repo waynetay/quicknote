@@ -13,7 +13,13 @@ The GitHub Actions workflow automatically builds a **DMG installer** whenever co
 5. Open the DMG and drag `quicknote.app` onto the Applications shortcut shown in the window.
 6. Eject the disk image and launch quicknote from Applications.
 
-You do not need Xcode to install or use the app. The app is unsigned and not notarized with an Apple Developer ID, so macOS may show a security warning on first launch. Only open it if you trust the source.
+You do not need Xcode to install or use the app. The app is ad-hoc signed to help macOS validate the bundle, but it is not signed with an Apple Developer ID or notarized. Depending on your macOS security settings, you may still need to allow it manually the first time. If macOS says the app is "damaged", first make sure you downloaded the latest build; if you trust this project, open Terminal and run:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/quicknote.app
+```
+
+Then try opening it again. This removes the download quarantine flag from this app only; do this only for software you trust. A Developer ID signature and notarization would avoid this warning, but require an Apple Developer distribution setup.
 
 **Requirement:** macOS 13 Ventura or later.
 
