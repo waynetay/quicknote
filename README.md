@@ -1,55 +1,51 @@
-# Notepad for macOS
+# quicknote
 
-A minimal, native macOS notes app with two independent writing spaces: a compact floating Quick Note and a distraction-free Full Pad.
+A minimal native macOS notes app with a clean notepad and a compact floating Quick Note.
 
 ## Features
 
-- **Quick Note:** jot down short reminders in the main window or open a small floating window that can stay above other windows.
-- **Full Pad:** a larger writing area with a full-screen toggle.
-- **Separate notes:** each workspace stores its own text; editing one does not replace the other.
-- **Autosave:** notes are saved locally using macOS preferences and remain available after quitting and reopening the app.
-- **Offline-first:** the app does not need an account or network connection.
-- **Dark interface:** native SwiftUI controls with a purple accent.
+- **Notepad:** a spacious writing area with only the title and a simple "Start writing" placeholder.
+- **Floating Quick Note:** use the toolbar button to open a small window that stays above other windows.
+- **Independent notes:** the main Notepad and Quick Note save different text.
+- **Autosave:** notes persist locally after quitting and reopening.
+- **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
+- **Dark interface:** native SwiftUI with a purple accent.
 
-## Download the app (no Xcode required)
+## Download (no Xcode required to use)
 
-The GitHub Actions workflow builds the app automatically whenever code is pushed to `main`.
+Every push to `main` triggers a GitHub Actions build.
 
-1. Open the repository's [Actions tab](../../actions/workflows/build-macos.yml).
+1. Open the [Actions tab](../../actions/workflows/build-macos.yml).
 2. Select the latest successful **Build macOS app** run.
-3. Under **Artifacts**, download **Notepad-macOS**.
-4. Unzip `Notepad-macOS.zip`.
-5. Move `Notepad.app` into your **Applications** folder and open it.
+3. Download the **quicknote-macOS** artifact.
+4. Unzip it and move `quicknote.app` to Applications.
+5. Open `quicknote.app`.
 
-The artifact is an unsigned app bundle. Since it is not notarized with an Apple Developer ID, macOS may show a security warning the first time you open it. Only bypass that warning if you trust the source and have reviewed the project.
+The app is unsigned and not notarized with an Apple Developer ID, so macOS may show a security warning on first launch. Only open it if you trust the source.
 
-**System requirement:** macOS 13 Ventura or later.
+**Requirement:** macOS 13 Ventura or later.
 
 ## Build locally
 
-You only need Apple's Swift toolchain on a Mac. Xcode is one way to install it, but once the toolchain is available you can build from Terminal:
+On a Mac with Apple's Swift toolchain installed:
 
 ```bash
 git clone https://github.com/waynetay/macos-notes.git
 cd macos-notes
 bash scripts/build-app.sh
-open dist/Notepad.app
+open dist/quicknote.app
 ```
 
-The build script creates `dist/Notepad.app`.
+## Storage
 
-## Where notes are stored
-
-The text is stored locally in the app's macOS `UserDefaults` preferences. Quick Note and Full Pad use separate keys. Notes are not uploaded to GitHub or any server.
-
-Uninstalling the app does not necessarily remove its saved preferences. To manually reset the saved notes, use macOS app preferences only if you know what you are deleting; the current version does not include a reset button.
+Notes are stored locally in macOS UserDefaults under separate keys for the main Notepad and floating Quick Note. Uninstalling the app does not necessarily remove saved preferences.
 
 ## Project structure
 
 - `Package.swift` — Swift package definition.
-- `Sources/Notepad/NotepadApp.swift` — app UI and note persistence.
+- `Sources/Notepad/NotepadApp.swift` — app interface and note persistence.
 - `scripts/build-app.sh` — packages the executable into a `.app` bundle.
-- `.github/workflows/build-macos.yml` — builds and uploads a downloadable app artifact.
+- `.github/workflows/build-macos.yml` — builds and uploads the app artifact.
 
 ## License
 
