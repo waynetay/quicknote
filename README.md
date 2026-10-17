@@ -2,28 +2,29 @@
 
 A minimal native macOS notes app with a clean notepad and a compact floating Quick Note.
 
+## Download and install
+
+The GitHub Actions workflow automatically builds a **DMG installer** whenever code is pushed to `main`.
+
+1. Open the [Actions tab](../../actions/workflows/build-macos.yml).
+2. Select the latest successful **Build macOS app** run.
+3. Under **Artifacts**, download `quicknote-installer`.
+4. Open the downloaded artifact ZIP to extract `quicknote-macOS.dmg`.
+5. Open the DMG and drag `quicknote.app` onto the Applications shortcut shown in the window.
+6. Eject the disk image and launch quicknote from Applications.
+
+You do not need Xcode to install or use the app. The app is unsigned and not notarized with an Apple Developer ID, so macOS may show a security warning on first launch. Only open it if you trust the source.
+
+**Requirement:** macOS 13 Ventura or later.
+
 ## Features
 
 - **Notepad:** a spacious writing area with only the title and a simple "Start writing" placeholder.
-- **Floating Quick Note:** use the toolbar button to open a small window that stays above other windows.
+- **Floating Quick Note:** use the toolbar button to open a small window configured to stay above other windows, including fullscreen Spaces.
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
 - **Dark interface:** native SwiftUI with a purple accent.
-
-## Download (no Xcode required to use)
-
-Every push to `main` triggers a GitHub Actions build.
-
-1. Open the [Actions tab](../../actions/workflows/build-macos.yml).
-2. Select the latest successful **Build macOS app** run.
-3. Download the **quicknote-macOS** artifact.
-4. Unzip it and move `quicknote.app` to Applications.
-5. Open `quicknote.app`.
-
-The app is unsigned and not notarized with an Apple Developer ID, so macOS may show a security warning on first launch. Only open it if you trust the source.
-
-**Requirement:** macOS 13 Ventura or later.
 
 ## Build locally
 
@@ -44,8 +45,8 @@ Notes are stored locally in macOS UserDefaults under separate keys for the main 
 
 - `Package.swift` — Swift package definition.
 - `Sources/Notepad/NotepadApp.swift` — app interface and note persistence.
-- `scripts/build-app.sh` — packages the executable into a `.app` bundle.
-- `.github/workflows/build-macos.yml` — builds and uploads the app artifact.
+- `scripts/build-app.sh` — packages the executable as `quicknote.app` and creates a DMG installer.
+- `.github/workflows/build-macos.yml` — builds and uploads the installer artifact.
 
 ## License
 
