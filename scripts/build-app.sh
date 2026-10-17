@@ -4,13 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "Building Notepad for macOS…"
+echo "Building quicknote for macOS…"
 swift build -c release
 
-APP="dist/Notepad.app"
+APP="dist/quicknote.app"
 mkdir -p "$APP/Contents/MacOS"
 
-cp ".build/release/Notepad" "$APP/Contents/MacOS/Notepad"
+cp ".build/release/quicknote" "$APP/Contents/MacOS/quicknote"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -18,13 +18,13 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>Notepad</string>
+    <string>quicknote</string>
     <key>CFBundleIdentifier</key>
-    <string>com.waynetay.notepad</string>
+    <string>com.waynetay.quicknote</string>
     <key>CFBundleName</key>
-    <string>Notepad</string>
+    <string>quicknote</string>
     <key>CFBundleDisplayName</key>
-    <string>Notepad</string>
+    <string>quicknote</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMinimumSystemVersion</key>
