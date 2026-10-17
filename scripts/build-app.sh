@@ -37,4 +37,15 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
-echo "Created $APP"
+# Create a drag-and-drop disk image installer.
+mkdir -p dist/dmg-staging
+cp -R "$APP" dist/dmg-staging/
+ln -s /Applications dist/dmg-staging/Applications
+hdiutil create \
+  -volname "quicknote" \
+  -srcfolder dist/dmg-staging \
+  -ov -format UDZO \
+  "dist/quicknote-macOS.dmg"
+rm -rf dist/dmg-staging
+
+echo "Created $APP and dist/quicknote-macOS.dmg"
