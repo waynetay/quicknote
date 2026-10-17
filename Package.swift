@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "Notepad",
+    name: "quicknote",
     platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "Notepad", targets: ["Notepad"])
+        .executable(name: "quicknote", targets: ["quicknote"])
     ],
     targets: [
-        .executableTarget(name: "Notepad")
+        .executableTarget(name: "quicknote", path: "Sources/Notepad")
     ]
 )
