@@ -9,7 +9,7 @@ swift build -c release
 
 APP="dist/quicknote.app"
 ICONSET="dist/quicknote.iconset"
-mkdir -p "$APP/Contents/MacOS" dist
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" dist
 
 cp ".build/release/quicknote" "$APP/Contents/MacOS/quicknote"
 
