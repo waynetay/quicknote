@@ -178,7 +178,6 @@ private struct NoteEditorView: View {
                     .lineSpacing(5)
                     .scrollContentBackground(.hidden)
                     .foregroundStyle(Color.white.opacity(0.92))
-                    .textEditorStyle(.plain)
                     .accessibilityLabel(title)
             }
             .padding(15)
@@ -241,7 +240,6 @@ private struct QuickNoteWindowView: View {
                     .lineSpacing(4)
                     .scrollContentBackground(.hidden)
                     .foregroundStyle(Color.white.opacity(0.94))
-                    .textEditorStyle(.plain)
                     .accessibilityLabel("Quick Note text")
             }
             .padding(12)
