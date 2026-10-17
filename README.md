@@ -25,7 +25,7 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
 
-## Storage
+## Notes
 
 Notes are stored locally in macOS UserDefaults under separate keys for the main Notepad and floating Quick Note. Uninstalling the app does not necessarily remove saved preferences.
 
