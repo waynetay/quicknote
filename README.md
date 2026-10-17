@@ -12,11 +12,10 @@ Download the **v1.0 installer ZIP** from the [GitHub Releases page](https://gith
 4. Drag `quicknote.app` onto the **Applications** shortcut in the installer window.
 5. Eject the disk image, then launch quicknote from Applications.
 
-**You do not need Xcode, Swift, Terminal, or any development tools to install or use quicknote.**
 
-**Requirement:** macOS 13 Ventura or later.
+**Requirements:** macOS 13 Ventura or later.
 
-The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. macOS may show a security warning on first launch. If that happens, use macOS **System Settings → Privacy & Security** to review the blocked app and allow it only if you trust the download. A Developer ID signature and notarization would avoid this warning, but require an Apple Developer distribution setup.
+The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. macOS may show a security warning on first launch. If that happens, use macOS **System Settings → Privacy & Security** to review the blocked app and allow it.
 
 ## Features
 
@@ -25,7 +24,6 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
-- **Dark interface:** native SwiftUI with a purple accent.
 
 ## Storage
 
