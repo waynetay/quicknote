@@ -29,23 +29,16 @@ private enum AppStyle {
 }
 
 /// Native Liquid Glass on macOS 26+, with a material fallback for macOS 13–15.
-private struct AdaptiveGlass<S: Shape>: ViewModifier {
-    let shape: S
-
-    func body(content: Content) -> some View {
+private extension View {
+    @ViewBuilder
+    func adaptiveGlass<S: Shape>(in shape: S) -> some View {
         if #available(macOS 26.0, *) {
-            content.glassEffect(.regular, in: shape)
+            self.glassEffect(.regular, in: shape)
         } else {
-            content
+            self
                 .background(.ultraThinMaterial, in: shape)
                 .overlay { shape.stroke(Color.white.opacity(0.12), lineWidth: 1) }
         }
-    }
-}
-
-private extension View {
-    func adaptiveGlass<S: Shape>(in shape: S) -> some View {
-        modifier(AdaptiveGlass(shape: shape))
     }
 }
 
@@ -146,13 +139,7 @@ private struct QuickNoteWindowView: View {
             }
             .padding(12)
         }
-        .background {
-            if #available(macOS 26.0, *) {
-                panelShape.fill(.clear).glassEffect(.regular, in: panelShape)
-            } else {
-                panelShape.fill(.ultraThinMaterial)
-            }
-        }
+        .background(QuickNoteGlassBackground(shape: panelShape))
         .clipShape(panelShape)
         .overlay {
             panelShape.strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
@@ -171,6 +158,19 @@ private struct QuickNoteWindowView: View {
                     window.isMovableByWindowBackground = true
                 }
             }
+        }
+    }
+}
+
+
+private struct QuickNoteGlassBackground<S: Shape>: View {
+    let shape: S
+
+    var body: some View {
+        if #available(macOS 26.0, *) {
+            shape.fill(.clear).glassEffect(.regular, in: shape)
+        } else {
+            shape.fill(.ultraThinMaterial)
         }
     }
 }
