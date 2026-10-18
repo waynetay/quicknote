@@ -28,6 +28,30 @@ private enum AppStyle {
     static let muted = Color.white.opacity(0.48)
 }
 
+/// Uses Apple's Liquid Glass on macOS 26+, with a translucent material fallback
+/// so the app continues to work on its supported macOS 13+ deployment target.
+private struct AdaptiveGlass<ShapeType: Shape>: ViewModifier {
+    let shape: ShapeType
+
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular, in: shape)
+        } else {
+            content
+                .background(.ultraThinMaterial, in: shape)
+                .overlay {
+                    shape.strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+                }
+        }
+    }
+}
+
+private extension View {
+    func adaptiveGlass<S: Shape>(in shape: S) -> some View {
+        modifier(AdaptiveGlass(shape: shape))
+    }
+}
+
 struct MainWindowView: View {
     @AppStorage("fullPadText") private var fullPadText = ""
     @Environment(\.openWindow) private var openWindow
@@ -58,9 +82,12 @@ struct MainWindowView: View {
                     .accessibilityLabel("Notepad")
             }
             .padding(15)
-            .background(AppStyle.panel, in: RoundedRectangle(cornerRadius: 16))
+            .background {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(AppStyle.panel.opacity(0.78))
+            }
             .overlay {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(Color.white.opacity(0.07), lineWidth: 1)
             }
         }
@@ -73,8 +100,10 @@ struct MainWindowView: View {
                     openWindow(id: "quick-note")
                 } label: {
                     Label("Quick Note", systemImage: "macwindow")
+                        .padding(.horizontal, 3)
                 }
                 .help("Open the floating Quick Note")
+                .adaptiveGlass(in: Capsule())
             }
         }
     }
@@ -82,6 +111,8 @@ struct MainWindowView: View {
 
 private struct QuickNoteWindowView: View {
     @AppStorage("quickNoteText") private var quickNoteText = ""
+
+    private let panelShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
     var body: some View {
         VStack(spacing: 0) {
@@ -98,6 +129,7 @@ private struct QuickNoteWindowView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
+            .background(.ultraThinMaterial.opacity(0.55))
 
             Rectangle()
                 .fill(Color.white.opacity(0.08))
@@ -121,13 +153,32 @@ private struct QuickNoteWindowView: View {
             }
             .padding(12)
         }
-        .background(AppStyle.background)
+        .background {
+            ZStack {
+                AppStyle.background.opacity(0.78)
+                if #available(macOS 26.0, *) {
+                    panelShape.fill(.clear).glassEffect(.regular, in: panelShape)
+                } else {
+                    Rectangle().fill(.ultraThinMaterial)
+                }
+            }
+        }
+        .clipShape(panelShape)
+        .overlay {
+            panelShape.strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+        }
+        .padding(8)
+        .background(Color.clear)
+        .tint(AppStyle.accent)
         .onAppear {
             DispatchQueue.main.async {
                 if let window = NSApp.windows.first(where: { $0.title == "Quick Note" }) {
                     window.level = .floating
                     window.collectionBehavior.insert([.canJoinAllSpaces, .fullScreenAuxiliary])
                     window.isReleasedWhenClosed = false
+                    window.titlebarAppearsTransparent = true
+                    window.titleVisibility = .hidden
+                    window.isMovableByWindowBackground = true
                 }
             }
         }
