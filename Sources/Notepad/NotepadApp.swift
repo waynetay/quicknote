@@ -28,10 +28,9 @@ private enum AppStyle {
     static let muted = Color.white.opacity(0.48)
 }
 
-/// Uses Apple's Liquid Glass on macOS 26+, with a translucent material fallback
-/// so the app continues to work on its supported macOS 13+ deployment target.
-private struct AdaptiveGlass<ShapeType: Shape>: ViewModifier {
-    let shape: ShapeType
+/// Native Liquid Glass on macOS 26+, with a material fallback for macOS 13–15.
+private struct AdaptiveGlass<S: Shape>: ViewModifier {
+    let shape: S
 
     func body(content: Content) -> some View {
         if #available(macOS 26.0, *) {
@@ -39,9 +38,7 @@ private struct AdaptiveGlass<ShapeType: Shape>: ViewModifier {
         } else {
             content
                 .background(.ultraThinMaterial, in: shape)
-                .overlay {
-                    shape.strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
-                }
+                .overlay { shape.stroke(Color.white.opacity(0.12), lineWidth: 1) }
         }
     }
 }
@@ -82,10 +79,7 @@ struct MainWindowView: View {
                     .accessibilityLabel("Notepad")
             }
             .padding(15)
-            .background {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(AppStyle.panel.opacity(0.78))
-            }
+            .background(AppStyle.panel.opacity(0.82), in: RoundedRectangle(cornerRadius: 20))
             .overlay {
                 RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(Color.white.opacity(0.07), lineWidth: 1)
@@ -111,7 +105,6 @@ struct MainWindowView: View {
 
 private struct QuickNoteWindowView: View {
     @AppStorage("quickNoteText") private var quickNoteText = ""
-
     private let panelShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
     var body: some View {
@@ -129,7 +122,7 @@ private struct QuickNoteWindowView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
-            .background(.ultraThinMaterial.opacity(0.55))
+            .background(.ultraThinMaterial)
 
             Rectangle()
                 .fill(Color.white.opacity(0.08))
@@ -154,13 +147,10 @@ private struct QuickNoteWindowView: View {
             .padding(12)
         }
         .background {
-            ZStack {
-                AppStyle.background.opacity(0.78)
-                if #available(macOS 26.0, *) {
-                    panelShape.fill(.clear).glassEffect(.regular, in: panelShape)
-                } else {
-                    Rectangle().fill(.ultraThinMaterial)
-                }
+            if #available(macOS 26.0, *) {
+                panelShape.fill(.clear).glassEffect(.regular, in: panelShape)
+            } else {
+                panelShape.fill(.ultraThinMaterial)
             }
         }
         .clipShape(panelShape)
