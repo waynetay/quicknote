@@ -86,7 +86,7 @@ private final class QuickNoteHotKey {
 }
 
 private struct QuicknoteMenuView: View {
-    @Environment(\\.openWindow) private var openWindow
+    @Environment(\.openWindow) private var openWindow
     @State private var launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
 
     var body: some View {
