@@ -1,6 +1,6 @@
 # quicknote
 
-A minimal native macOS notes app with a clean notepad and a compact floating Quick Note.
+A lightweight macOS menu bar notes app. Press ⌥Q for a floating Quick Note or ⇧⌥Q for the full Notepad, from any desktop.
 
 ## Download and install
 
@@ -21,7 +21,8 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 
 - **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
 - **Floating Quick Note:** a compact window that can appear above other apps, including in full-screen Spaces.
-- **Quick launch:** press **Option–Q** to open the floating Quick Note from anywhere while quicknote is running.
+- **Quick Note:** press **Option–Q** to open a focused floating note over other apps, including full-screen Spaces.
+- **Notepad:** press **Shift–Option–Q** or choose Notepad from the menu bar.
 - **Menu bar app:** quicknote stays available in the menu bar without keeping the Notepad window open. Use **Open at Login** to start it automatically.
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
