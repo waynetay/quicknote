@@ -4,7 +4,7 @@ A minimal native macOS notes app with a clean notepad and a compact floating Qui
 
 ## Download and install
 
-Download the **v1.0 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/macos-notes/releases/latest).
+Download the **v1.3 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/macos-notes/releases/latest).
 
 1. Download the installer ZIP asset.
 2. Double-click the ZIP to extract `quicknote-macOS.dmg`.
