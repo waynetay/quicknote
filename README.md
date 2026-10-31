@@ -20,7 +20,8 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 ## Features
 
 - **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
-- **Floating Quick Note:** a compact window designed to stay above other windows, including fullscreen Spaces.
+- **Floating Quick Note:** a compact window that can appear above other apps, including in full-screen Spaces.
+- **Quick launch:** press **Option–Q** to open the floating Quick Note from anywhere.
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
