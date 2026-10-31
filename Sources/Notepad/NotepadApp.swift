@@ -1,24 +1,37 @@
 import AppKit
 import Carbon
+import ServiceManagement
 import SwiftUI
 
 @main
 struct QuicknoteApp: App {
+    @NSApplicationDelegateAdaptor(QuicknoteAppDelegate.self) private var appDelegate
+
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("quicknote", systemImage: "note.text") {
+            QuicknoteMenuView()
+        }
+        .menuBarExtraStyle(.menu)
+
+        Window("Notepad", id: "notepad") {
             MainWindowView()
                 .frame(minWidth: 640, minHeight: 440)
                 .preferredColorScheme(.dark)
         }
         .windowStyle(.titleBar)
+        .defaultSize(width: 720, height: 520)
+    }
+}
 
-        WindowGroup("Quick Note", id: "quick-note") {
-            QuickNoteWindowView()
-                .frame(minWidth: 280, idealWidth: 320, maxWidth: 520,
-                       minHeight: 240, idealHeight: 360, maxHeight: 700)
-                .preferredColorScheme(.dark)
+private final class QuicknoteAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        QuickNoteHotKey.shared.register {
+            QuickNotePanelController.shared.show()
         }
-        .defaultSize(width: 320, height: 360)
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        false
     }
 }
 
@@ -68,6 +81,46 @@ private final class QuickNoteHotKey {
         if registerStatus != noErr, let eventHandlerRef {
             RemoveEventHandler(eventHandlerRef)
             self.eventHandlerRef = nil
+        }
+    }
+}
+
+private struct QuicknoteMenuView: View {
+    @State private var launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+
+    var body: some View {
+        Button("New Quick Note  ⌥Q") {
+            QuickNotePanelController.shared.show()
+        }
+        Button("Open Notepad") {
+            openWindow(id: "notepad")
+        }
+
+        Divider()
+
+        Toggle("Open at Login", isOn: $launchAtLoginEnabled)
+            .onChange(of: launchAtLoginEnabled) { isEnabled in
+                do {
+                    if isEnabled {
+                        try SMAppService.mainApp.register()
+                    } else {
+                        try SMAppService.mainApp.unregister()
+                    }
+                } catch {
+                    launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+                }
+            }
+
+        if SMAppService.mainApp.status == .requiresApproval {
+            Button("Review Login Items…") {
+                SMAppService.openSystemSettingsLoginItems()
+            }
+        }
+
+        Divider()
+
+        Button("Quit quicknote") {
+            NSApp.terminate(nil)
         }
     }
 }
@@ -135,7 +188,7 @@ struct MainWindowView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    openWindow(id: "quick-note")
+                    QuickNotePanelController.shared.show()
                 } label: {
                     Label("Quick Note", systemImage: "macwindow")
                         .padding(.horizontal, 3)
@@ -144,11 +197,57 @@ struct MainWindowView: View {
                 .adaptiveGlass(in: Capsule())
             }
         }
-        .onAppear {
-            QuickNoteHotKey.shared.register {
-                openWindow(id: "quick-note")
-            }
+    }
+}
+
+private final class QuickNotePanelController: NSObject, NSWindowDelegate {
+    static let shared = QuickNotePanelController()
+    private var panel: NSPanel?
+
+    func show() {
+        NSApp.activate(ignoringOtherApps: true)
+
+        if let panel {
+            panel.makeKeyAndOrderFront(nil)
+            return
         }
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 336, height: 376),
+            styleMask: [.titled, .closable, .resizable, .utilityWindow],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = "Quick Note"
+        panel.level = .floating
+        panel.isFloatingPanel = true
+        panel.hidesOnDeactivate = false
+        panel.isReleasedWhenClosed = false
+        panel.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications]
+        panel.titlebarAppearsTransparent = true
+        panel.titleVisibility = .hidden
+        panel.isMovableByWindowBackground = true
+        panel.standardWindowButton(.zoomButton)?.isHidden = true
+        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        panel.delegate = self
+        panel.contentView = NSHostingView(
+            rootView: QuickNoteWindowView()
+                .frame(
+                    minWidth: 280, idealWidth: 320, maxWidth: 520,
+                    minHeight: 240, idealHeight: 360, maxHeight: 700
+                )
+                .preferredColorScheme(.dark)
+        )
+
+        self.panel = panel
+        panel.center()
+        panel.makeKeyAndOrderFront(nil)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let closingPanel = notification.object as? NSPanel,
+              closingPanel === panel else { return }
+        panel = nil
     }
 }
 
@@ -208,16 +307,6 @@ private struct QuickNoteWindowView: View {
         .onAppear {
             DispatchQueue.main.async {
                 noteIsFocused = true
-                NSApp.activate(ignoringOtherApps: true)
-                if let window = NSApp.windows.first(where: { $0.title == "Quick Note" }) {
-                    window.level = .floating
-                    window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications]
-                    window.isReleasedWhenClosed = false
-                    window.titlebarAppearsTransparent = true
-                    window.titleVisibility = .hidden
-                    window.isMovableByWindowBackground = true
-                    window.makeKeyAndOrderFront(nil)
-                }
             }
         }
     }
