@@ -1,4 +1,5 @@
 import AppKit
+import Carbon
 import SwiftUI
 
 @main
@@ -18,6 +19,56 @@ struct QuicknoteApp: App {
                 .preferredColorScheme(.dark)
         }
         .defaultSize(width: 320, height: 360)
+    }
+}
+
+private final class QuickNoteHotKey {
+    static let shared = QuickNoteHotKey()
+
+    private var hotKeyRef: EventHotKeyRef?
+    private var eventHandlerRef: EventHandlerRef?
+    private var onActivate: (() -> Void)?
+
+    func register(action: @escaping () -> Void) {
+        onActivate = action
+        guard eventHandlerRef == nil else { return }
+
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+        let handler: EventHandlerProcPtr = { _, _, userData in
+            guard let userData else { return OSStatus(eventNotHandledErr) }
+            let controller = Unmanaged<QuickNoteHotKey>.fromOpaque(userData).takeUnretainedValue()
+            DispatchQueue.main.async {
+                controller.onActivate?()
+            }
+            return noErr
+        }
+
+        let installStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            handler,
+            1,
+            &eventType,
+            Unmanaged.passUnretained(self).toOpaque(),
+            &eventHandlerRef
+        )
+        guard installStatus == noErr else { return }
+
+        let hotKeyID = EventHotKeyID(signature: OSType(0x514E4F54), id: 1)
+        let registerStatus = RegisterEventHotKey(
+            UInt32(kVK_ANSI_Q),
+            UInt32(optionKey),
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &hotKeyRef
+        )
+        if registerStatus != noErr, let eventHandlerRef {
+            RemoveEventHandler(eventHandlerRef)
+            self.eventHandlerRef = nil
+        }
     }
 }
 
@@ -93,11 +144,17 @@ struct MainWindowView: View {
                 .adaptiveGlass(in: Capsule())
             }
         }
+        .onAppear {
+            QuickNoteHotKey.shared.register {
+                openWindow(id: "quick-note")
+            }
+        }
     }
 }
 
 private struct QuickNoteWindowView: View {
     @AppStorage("quickNoteText") private var quickNoteText = ""
+    @FocusState private var noteIsFocused: Bool
     private let panelShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
     var body: some View {
@@ -131,6 +188,7 @@ private struct QuickNoteWindowView: View {
                         .allowsHitTesting(false)
                 }
                 TextEditor(text: $quickNoteText)
+                    .focused($noteIsFocused)
                     .font(.system(size: 14))
                     .lineSpacing(4)
                     .scrollContentBackground(.hidden)
@@ -149,13 +207,16 @@ private struct QuickNoteWindowView: View {
         .tint(AppStyle.accent)
         .onAppear {
             DispatchQueue.main.async {
+                noteIsFocused = true
+                NSApp.activate(ignoringOtherApps: true)
                 if let window = NSApp.windows.first(where: { $0.title == "Quick Note" }) {
                     window.level = .floating
-                    window.collectionBehavior.insert([.canJoinAllSpaces, .fullScreenAuxiliary])
+                    window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications]
                     window.isReleasedWhenClosed = false
                     window.titlebarAppearsTransparent = true
                     window.titleVisibility = .hidden
                     window.isMovableByWindowBackground = true
+                    window.makeKeyAndOrderFront(nil)
                 }
             }
         }
