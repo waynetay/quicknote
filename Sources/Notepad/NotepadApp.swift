@@ -62,8 +62,9 @@ private final class QuickNoteHotKey {
             guard readStatus == noErr else { return readStatus }
 
             let controller = Unmanaged<QuickNoteHotKey>.fromOpaque(userData).takeUnretainedValue()
+            let pressedHotKeyID = pressedHotKey.id
             DispatchQueue.main.async {
-                switch pressedHotKey.id {
+                switch pressedHotKeyID {
                 case 1:
                     controller.quickNoteAction?()
                 case 2:
