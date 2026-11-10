@@ -282,8 +282,8 @@ private final class NotepadWindowController: NSObject, NSWindowDelegate {
 private final class QuickNotePanelController: NSObject, NSWindowDelegate {
     static let shared = QuickNotePanelController()
     func toggle() {
-        if let window, window.isVisible {
-            window.orderOut(nil)
+        if let panel, panel.isVisible {
+            panel.orderOut(nil)
         } else {
             show()
         }
