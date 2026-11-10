@@ -18,8 +18,8 @@ struct QuicknoteApp: App {
 private final class QuicknoteAppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         QuickNoteHotKey.shared.register(
-            quickNoteAction: { QuickNotePanelController.shared.show() },
-            notepadAction: { NotepadWindowController.shared.show() }
+            quickNoteAction: { QuickNotePanelController.shared.toggle() },
+            notepadAction: { NotepadWindowController.shared.toggle() }
         )
     }
 
@@ -234,6 +234,14 @@ struct MainWindowView: View {
 
 private final class NotepadWindowController: NSObject, NSWindowDelegate {
     static let shared = NotepadWindowController()
+    func toggle() {
+        if let window, window.isVisible {
+            window.orderOut(nil)
+        } else {
+            show()
+        }
+    }
+
     private var window: NSWindow?
 
     func show() {
@@ -273,6 +281,14 @@ private final class NotepadWindowController: NSObject, NSWindowDelegate {
 
 private final class QuickNotePanelController: NSObject, NSWindowDelegate {
     static let shared = QuickNotePanelController()
+    func toggle() {
+        if let window, window.isVisible {
+            window.orderOut(nil)
+        } else {
+            show()
+        }
+    }
+
     private var panel: NSPanel?
 
     func show() {
