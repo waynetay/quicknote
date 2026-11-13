@@ -32,14 +32,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git -C old-v1.4 tag --force 1.4 1803d98c3f7858d6223f086e1956d78d392ab957
-          git -C old-v1.4 push --force origin refs/tags/1.4
           cat > v1.4-notes.md <<'EOF'
           - Fixed menu bar UI bugs
           - Pressing the open quicknote window shortcut while window is open closes the window now for easier control
           EOF
           gh release upload 1.4 old-v1.4/dist/quicknote-installer.zip --clobber
-          gh release edit 1.4 --title "v1.4" --notes-file v1.4-notes.md
+          gh release edit 1.4 --target 1803d98c3f7858d6223f086e1956d78d392ab957 --title "v1.4" --notes-file v1.4-notes.md
 
       - name: Build v1.5 installer
         run: |
@@ -51,8 +49,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git tag --force 1.5 "$GITHUB_SHA"
-          git push --force origin refs/tags/1.5
           cat > v1.5-notes.md <<'EOF'
           - Polished UI
           - Bug fixes
