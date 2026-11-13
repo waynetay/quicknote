@@ -122,7 +122,7 @@ private struct QuicknoteMenuView: View {
     @State private var launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
 
     var body: some View {
-        Button("Quick Note  ⌥Q") {
+        Button("quicknote  ⌥Q") {
             QuickNotePanelController.shared.show()
         }
         Button("Notepad  ⇧⌥Q") {
@@ -185,7 +185,7 @@ struct MainWindowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Notepad")
+                Text("notepad")
                     .font(.system(size: 29, weight: .semibold, design: .rounded))
                     .tracking(-0.7)
                 Spacer()
@@ -205,7 +205,7 @@ struct MainWindowView: View {
                     .lineSpacing(5)
                     .scrollContentBackground(.hidden)
                     .foregroundStyle(Color.white.opacity(0.92))
-                    .accessibilityLabel("Notepad")
+                    .accessibilityLabel("notepad")
             }
             .padding(15)
             .background(AppStyle.panel.opacity(0.82), in: RoundedRectangle(cornerRadius: 20))
@@ -222,7 +222,7 @@ struct MainWindowView: View {
                 Button {
                     QuickNotePanelController.shared.show()
                 } label: {
-                    Label("Quick Note", systemImage: "macwindow")
+                    Label("quicknote", systemImage: "macwindow")
                         .padding(.horizontal, 3)
                 }
                 .help("Open the floating Quick Note")
@@ -258,7 +258,7 @@ private final class NotepadWindowController: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "Notepad"
+        window.title = "quicknote"
         window.isReleasedWhenClosed = false
         window.delegate = self
         window.contentView = NSHostingView(
@@ -305,7 +305,7 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        panel.title = "Quick Note"
+        panel.title = "quicknote"
         panel.level = .floating
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
@@ -348,7 +348,7 @@ private struct QuickNoteWindowView: View {
             HStack(spacing: 8) {
                 Image(systemName: "note.text")
                     .foregroundStyle(AppStyle.accent)
-                Text("Quick Note")
+                Text("quicknote")
                     .font(.system(size: 13, weight: .semibold))
                 Spacer()
                 Text("AUTOSAVED")
@@ -379,7 +379,7 @@ private struct QuickNoteWindowView: View {
                     .lineSpacing(4)
                     .scrollContentBackground(.hidden)
                     .foregroundStyle(Color.white.opacity(0.94))
-                    .accessibilityLabel("Quick Note text")
+                    .accessibilityLabel("quicknote text")
             }
             .padding(12)
         }
