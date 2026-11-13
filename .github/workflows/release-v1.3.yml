@@ -32,8 +32,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git tag --force 1.4 1803d98c3f7858d6223f086e1956d78d392ab957
-          git push --force origin refs/tags/1.4
+          git -C old-v1.4 tag --force 1.4 1803d98c3f7858d6223f086e1956d78d392ab957
+          git -C old-v1.4 push --force origin refs/tags/1.4
           cat > v1.4-notes.md <<'EOF'
           - Fixed menu bar UI bugs
           - Pressing the open quicknote window shortcut while window is open closes the window now for easier control
