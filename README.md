@@ -4,7 +4,7 @@ A lightweight macOS menu bar notes app. Press ⌥Q for a floating Quick Note or 
 
 ## Download and install
 
-Download the **v1.4 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/quicknote/releases/latest).
+Download the **v1.5 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/quicknote/releases/latest).
 
 1. Download the installer ZIP asset.
 2. Double-click the ZIP to extract `quicknote-macOS.dmg`.
