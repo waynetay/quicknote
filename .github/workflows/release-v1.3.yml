@@ -66,4 +66,4 @@ jobs:
           - Fixed menu bar UI bugs
           - Pressing the open quicknote window shortcut while window is open closes the window now for easier control
           EOF
-          gh release edit 1.4 --title "v1.4" --notes-file v1.4-notes.md
+          gh release edit 1.4 --repo waynetay/quicknote --title "v1.4" --notes-file v1.4-notes.md
