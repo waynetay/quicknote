@@ -54,7 +54,7 @@ jobs:
           EOF
           gh release create 1.5 dist/quicknote-installer.zip             --title "v1.5"             --notes-file v1.5-notes.md
 
-  restore-v1.4-notes:
+  restore_v1_4_notes:
     if: github.event.head_commit.message == 'Restore original quicknote v1.4 notes'
     runs-on: macos-26
     steps:
