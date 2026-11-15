@@ -27,7 +27,7 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
-- **Tinted Liquid Glass:** The floating quicknote matches the Notepad's dark interface, with a subtle purple glass tint.
+- **Floating note appearance:** quicknote uses the same solid dark surface as Notepad, with a subtle purple tint.
 
 ## Notes
 
