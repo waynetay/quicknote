@@ -20,14 +20,14 @@ The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. ma
 ## Features
 
 - **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
-- **Floating Quick Note:** a compact, draggable window that can appear above other apps, including in full-screen Spaces.
+- **Floating Quick Note:** a compact window with a dedicated draggable header that can appear above other apps, including in full-screen Spaces.
 - **Quick Note:** press **Option–Q** to open a focused floating note over other apps, including full-screen Spaces.
 - **Notepad:** press **Shift–Option–Q** or choose Notepad from the menu bar.
 - **Menu bar app:** quicknote stays available in the menu bar without keeping the Notepad window open. Use **Open at Login** to start it automatically.
 - **Independent notes:** the main Notepad and Quick Note save different text.
 - **Autosave:** notes persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
-- **Tinted Liquid Glass:** The floating quicknote has a solid dark surface with a subtle purple glass tint.
+- **Tinted Liquid Glass:** The floating quicknote matches the Notepad's dark interface, with a subtle purple glass tint.
 
 ## Notes
 
