@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    if: github.event.head_commit.message == 'Correct quicknote v1.7 appearance'
+    if: github.event.head_commit.message == 'Toggle quicknote from toolbar for v1.7'
     runs-on: macos-26
     steps:
       - name: Check out source
@@ -28,7 +28,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           printf '%s\n' \
-            '- Matched the floating quicknote to the solid Notepad surface' \
-            '- Fixed floating note layout and header dragging' > release-notes.md
+            '- Matched the floating quicknote to the solid Notepad surface and fixed layout and dragging' \
+            '- Made the Notepad toolbar button toggle the floating quicknote' > release-notes.md
           gh release upload 1.7 dist/quicknote-installer.zip --clobber
           gh release edit 1.7 --title "v1.7" --notes-file release-notes.md
