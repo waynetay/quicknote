@@ -183,20 +183,24 @@ struct MainWindowView: View {
     @AppStorage("fullPadText") private var fullPadText = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
+            NoteWindowHeader()
+
             HStack {
                 Text("notepad")
-                    .font(.system(size: 29, weight: .semibold, design: .rounded))
-                    .tracking(-0.7)
+                    .font(.system(size: 27, weight: .semibold, design: .rounded))
+                    .tracking(-0.6)
                 Spacer()
             }
-            .padding(.bottom, 24)
+            .padding(.horizontal, 22)
+            .padding(.top, 20)
+            .padding(.bottom, 14)
 
             ZStack {
                 if fullPadText.isEmpty {
                     Text("Start writing")
                         .font(.system(size: 15))
-                        .foregroundStyle(AppStyle.muted.opacity(0.7))
+                        .foregroundStyle(AppStyle.muted.opacity(0.72))
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .allowsHitTesting(false)
                 }
@@ -204,17 +208,15 @@ struct MainWindowView: View {
                     .font(.system(size: 15))
                     .lineSpacing(5)
                     .scrollContentBackground(.hidden)
-                    .foregroundStyle(Color.white.opacity(0.92))
+                    .foregroundStyle(Color.white.opacity(0.94))
                     .accessibilityLabel("notepad")
             }
-            .padding(15)
-            .background(AppStyle.panel.opacity(0.82), in: RoundedRectangle(cornerRadius: 20))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(Color.white.opacity(0.07), lineWidth: 1)
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .modifier(NoteEditorSurface(cornerRadius: 18))
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
         }
-        .padding(30)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppStyle.background)
         .tint(AppStyle.accent)
         .toolbar {
@@ -225,10 +227,60 @@ struct MainWindowView: View {
                     Label("quicknote", systemImage: "macwindow")
                         .padding(.horizontal, 3)
                 }
-                .help("Open the floating Quick Note")
+                .help("Open quicknote")
                 .adaptiveGlass(in: Capsule())
             }
         }
+    }
+}
+
+private struct NoteWindowHeader: View {
+    var onClose: (() -> Void)? = nil
+
+    var body: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "note.text")
+                .foregroundStyle(AppStyle.accent)
+            Text("quicknote")
+                .font(.system(size: 13, weight: .semibold))
+            Spacer(minLength: 12)
+            Text("AUTOSAVED")
+                .font(.system(size: 9, weight: .semibold))
+                .tracking(0.7)
+                .foregroundStyle(AppStyle.muted)
+            if let onClose {
+                Button(action: onClose) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(Color.white.opacity(0.72))
+                        .frame(width: 22, height: 22)
+                        .background(Color.white.opacity(0.08), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Close quicknote")
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 1)
+        }
+    }
+}
+
+private struct NoteEditorSurface: ViewModifier {
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        content
+            .padding(14)
+            .background(AppStyle.panel.opacity(0.8), in: shape)
+            .overlay {
+                shape.strokeBorder(Color.white.opacity(0.07), lineWidth: 1)
+            }
     }
 }
 
@@ -259,6 +311,8 @@ private final class NotepadWindowController: NSObject, NSWindowDelegate {
             defer: false
         )
         window.title = "quicknote"
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
         window.isReleasedWhenClosed = false
         window.delegate = self
         window.contentView = NSHostingView(
@@ -289,6 +343,10 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
         }
     }
 
+    func hide() {
+        panel?.orderOut(nil)
+    }
+
     private var panel: NSPanel?
 
     func show() {
@@ -301,7 +359,7 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
 
         let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 336, height: 376),
-            styleMask: [.titled, .closable, .resizable, .utilityWindow],
+            styleMask: [.borderless, .resizable, .utilityWindow],
             backing: .buffered,
             defer: false
         )
@@ -311,11 +369,10 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
         panel.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications]
-        panel.titlebarAppearsTransparent = true
-        panel.titleVisibility = .hidden
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = false
         panel.isMovableByWindowBackground = true
-        panel.standardWindowButton(.zoomButton)?.isHidden = true
-        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.delegate = self
         panel.contentView = NSHostingView(
             rootView: QuickNoteWindowView()
@@ -345,50 +402,36 @@ private struct QuickNoteWindowView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Image(systemName: "note.text")
-                    .foregroundStyle(AppStyle.accent)
-                Text("quicknote")
-                    .font(.system(size: 13, weight: .semibold))
-                Spacer()
-                Text("AUTOSAVED")
-                    .font(.system(size: 9, weight: .semibold))
-                    .tracking(0.7)
-                    .foregroundStyle(AppStyle.muted)
+            NoteWindowHeader {
+                QuickNotePanelController.shared.hide()
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 13)
-            .background(.ultraThinMaterial)
-
-            Rectangle()
-                .fill(Color.white.opacity(0.08))
-                .frame(height: 1)
 
             ZStack {
                 if quickNoteText.isEmpty {
-                    Text("What's on your mind?")
-                        .font(.system(size: 14))
-                        .foregroundStyle(AppStyle.muted.opacity(0.75))
+                    Text("Start writing")
+                        .font(.system(size: 15))
+                        .foregroundStyle(AppStyle.muted.opacity(0.72))
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .multilineTextAlignment(.center)
                         .allowsHitTesting(false)
                 }
                 TextEditor(text: $quickNoteText)
                     .focused($noteIsFocused)
-                    .font(.system(size: 14))
-                    .lineSpacing(4)
+                    .font(.system(size: 15))
+                    .lineSpacing(5)
                     .scrollContentBackground(.hidden)
                     .foregroundStyle(Color.white.opacity(0.94))
                     .accessibilityLabel("quicknote text")
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .modifier(NoteEditorSurface(cornerRadius: 16))
             .padding(12)
         }
         .background(QuickNoteGlassBackground(shape: panelShape))
         .clipShape(panelShape)
         .overlay {
-            panelShape.strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+            panelShape.strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
         }
-        .padding(8)
+        .shadow(color: Color.black.opacity(0.28), radius: 20, x: 0, y: 10)
         .background(Color.clear)
         .tint(AppStyle.accent)
         .onAppear {
@@ -398,7 +441,6 @@ private struct QuickNoteWindowView: View {
         }
     }
 }
-
 
 private struct QuickNoteGlassBackground<S: Shape>: View {
     let shape: S
