@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    if: github.event.head_commit.message == 'Refresh quicknote v1.7'
+    if: github.event.head_commit.message == 'Correct quicknote v1.7 appearance'
     runs-on: macos-26
     steps:
       - name: Check out source
@@ -23,12 +23,12 @@ jobs:
           cd dist
           zip -q -j quicknote-installer.zip quicknote-macOS.dmg
 
-      - name: Refresh v1.7 release
+      - name: Replace v1.7 installer
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           printf '%s\n' \
-            '- Matched the floating quicknote to the Notepad appearance' \
-            '- Fixed the floating note layout and header dragging' > release-notes.md
+            '- Matched the floating quicknote to the solid Notepad surface' \
+            '- Fixed floating note layout and header dragging' > release-notes.md
           gh release upload 1.7 dist/quicknote-installer.zip --clobber
           gh release edit 1.7 --title "v1.7" --notes-file release-notes.md
