@@ -257,6 +257,8 @@ private struct NoteWindowHeader: View {
                 .foregroundStyle(AppStyle.accent)
             Text("quicknote")
                 .font(.system(size: 13, weight: .semibold))
+            WindowDragHandle()
+                .frame(maxWidth: .infinity)
             Text("AUTOSAVED")
                 .font(.system(size: 9, weight: .semibold))
                 .tracking(0.7)
@@ -275,10 +277,6 @@ private struct NoteWindowHeader: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background {
-            WindowDragHandle()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.white.opacity(0.08))
@@ -475,7 +473,7 @@ private struct QuickNoteGlassBackground<S: Shape>: View {
             }
         } else {
             shape
-                .fill(AppStyle.panel)
+                .fill(AppStyle.background)
                 .overlay { shape.fill(AppStyle.accent.opacity(0.035)) }
         }
     }
