@@ -1,4 +1,4 @@
-name: Restore v1.4 and publish v1.5
+name: Release quicknote v1.6
 
 on:
   push:
@@ -8,62 +8,29 @@ permissions:
   contents: write
 
 jobs:
-  releases:
-    if: github.event.head_commit.message == 'Publish quicknote v1.5 and restore v1.4'
+  release:
+    if: github.event.head_commit.message == 'Publish quicknote v1.6'
     runs-on: macos-26
     steps:
-      - name: Check out current source
+      - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Check out original v1.4 source
-        uses: actions/checkout@v4
-        with:
-          ref: 1803d98c3f7858d6223f086e1956d78d392ab957
-          path: old-v1.4
+      - name: Build macOS app and installer
+        run: bash scripts/build-app.sh
 
-      - name: Build original v1.4 installer
-        working-directory: old-v1.4
+      - name: Package ZIP installer
         run: |
-          bash scripts/build-app.sh
           cd dist
           zip -q -j quicknote-installer.zip quicknote-macOS.dmg
 
-      - name: Restore the v1.4 tag and release
+      - name: Publish v1.6
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cat > v1.4-notes.md <<'EOF'
-          - Fixed menu bar UI bugs
-          - Pressing the open quicknote window shortcut while window is open closes the window now for easier control
-          EOF
-          gh release upload 1.4 old-v1.4/dist/quicknote-installer.zip --clobber
-
-      - name: Build v1.5 installer
-        run: |
-          bash scripts/build-app.sh
-          cd dist
-          zip -q -j quicknote-installer.zip quicknote-macOS.dmg
-
-      - name: Publish v1.5
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cat > v1.5-notes.md <<'EOF'
-          - Polished UI
-          - Bug fixes
-          EOF
-          gh release create 1.5 dist/quicknote-installer.zip             --title "v1.5"             --notes-file v1.5-notes.md
-
-  restore_v1_4_notes:
-    if: github.event.head_commit.message == 'Restore original quicknote v1.4 notes'
-    runs-on: macos-26
-    steps:
-      - name: Restore original v1.4 release notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cat > v1.4-notes.md <<'EOF'
-          - Fixed menu bar UI bugs
-          - Pressing the open quicknote window shortcut while window is open closes the window now for easier control
-          EOF
-          gh release edit 1.4 --repo waynetay/quicknote --title "v1.4" --notes-file v1.4-notes.md
+          printf '%s\n' \
+            '- Unified the notepad and quicknote window styling' \
+            '- Removed the square frame around quicknote' > release-notes.md
+          gh release create 1.6 dist/quicknote-installer.zip \
+            --title "v1.6" \
+            --target "$GITHUB_SHA" \
+            --notes-file release-notes.md
