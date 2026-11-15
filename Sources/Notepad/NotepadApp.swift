@@ -222,7 +222,7 @@ struct MainWindowView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    QuickNotePanelController.shared.show()
+                    QuickNotePanelController.shared.toggle()
                 } label: {
                     Label("quicknote", systemImage: "macwindow")
                         .padding(.horizontal, 3)
