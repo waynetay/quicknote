@@ -234,6 +234,20 @@ struct MainWindowView: View {
     }
 }
 
+private struct WindowDragHandle: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        WindowDragView()
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+private final class WindowDragView: NSView {
+    override func mouseDown(with event: NSEvent) {
+        window?.performDrag(with: event)
+    }
+}
+
 private struct NoteWindowHeader: View {
     var onClose: (() -> Void)? = nil
 
@@ -243,7 +257,8 @@ private struct NoteWindowHeader: View {
                 .foregroundStyle(AppStyle.accent)
             Text("quicknote")
                 .font(.system(size: 13, weight: .semibold))
-            Spacer(minLength: 12)
+            WindowDragHandle()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             Text("AUTOSAVED")
                 .font(.system(size: 9, weight: .semibold))
                 .tracking(0.7)
@@ -447,9 +462,19 @@ private struct QuickNoteGlassBackground<S: Shape>: View {
 
     var body: some View {
         if #available(macOS 26.0, *) {
-            shape.fill(.clear).glassEffect(.regular, in: shape)
+            ZStack {
+                shape.fill(AppStyle.panel)
+                shape
+                    .fill(Color.white.opacity(0.035))
+                    .glassEffect(
+                        .regular.tint(AppStyle.accent.opacity(0.12)),
+                        in: shape
+                    )
+            }
         } else {
-            shape.fill(.ultraThinMaterial)
+            shape
+                .fill(AppStyle.panel)
+                .overlay { shape.fill(Color.white.opacity(0.045)) }
         }
     }
 }
