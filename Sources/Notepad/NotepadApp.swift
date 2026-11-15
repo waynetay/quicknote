@@ -259,6 +259,7 @@ private struct NoteWindowHeader: View {
                 .font(.system(size: 13, weight: .semibold))
             WindowDragHandle()
                 .frame(maxWidth: .infinity)
+                .frame(height: 16)
             Text("AUTOSAVED")
                 .font(.system(size: 9, weight: .semibold))
                 .tracking(0.7)
@@ -461,20 +462,9 @@ private struct QuickNoteGlassBackground<S: Shape>: View {
     let shape: S
 
     var body: some View {
-        if #available(macOS 26.0, *) {
-            ZStack {
-                shape.fill(AppStyle.background)
-                shape
-                    .fill(Color.white.opacity(0.012))
-                    .glassEffect(
-                        .regular.tint(AppStyle.accent.opacity(0.035)),
-                        in: shape
-                    )
-            }
-        } else {
-            shape
-                .fill(AppStyle.background)
-                .overlay { shape.fill(AppStyle.accent.opacity(0.035)) }
+        ZStack {
+            shape.fill(AppStyle.background)
+            shape.fill(AppStyle.accent.opacity(0.035))
         }
     }
 }
