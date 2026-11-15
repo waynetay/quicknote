@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    if: github.event.head_commit.message == 'Publish quicknote v1.7'
+    if: github.event.head_commit.message == 'Update quicknote v1.7'
     runs-on: macos-26
     steps:
       - name: Check out source
@@ -23,14 +23,12 @@ jobs:
           cd dist
           zip -q -j quicknote-installer.zip quicknote-macOS.dmg
 
-      - name: Publish v1.7
+      - name: Update v1.7 release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           printf '%s\n' \
-            '- Added a solid tinted Liquid Glass surface for the floating quicknote' \
-            '- Restored dragging from the floating quicknote header' > release-notes.md
-          gh release create 1.7 dist/quicknote-installer.zip \
-            --title "v1.7" \
-            --target "$GITHUB_SHA" \
-            --notes-file release-notes.md
+            '- Matched the floating quicknote to the Notepad appearance' \
+            '- Fixed the floating note layout and header dragging' > release-notes.md
+          gh release upload 1.7 dist/quicknote-installer.zip --clobber
+          gh release edit 1.7 --title "v1.7" --notes-file release-notes.md
