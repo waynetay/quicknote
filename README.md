@@ -15,7 +15,6 @@ Download the **v1.7 installer ZIP** from the [GitHub Releases page](https://gith
 
 **Requirements:** macOS 13 Ventura or later.
 
-The app is ad-hoc signed, not signed with an Apple Developer ID or notarized. macOS may show a security warning on first launch. If that happens, use macOS **System Settings → Privacy & Security** to review the blocked app and allow it.
 
 ## Features
 
