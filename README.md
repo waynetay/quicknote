@@ -4,7 +4,7 @@ A lightweight macOS menu bar notes app. Press ⌥Q for a floating Quick Note or 
 
 ## Download and install
 
-Download the **v1.7 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/quicknote/releases/latest).
+Download the **v1.8 installer ZIP** from the [GitHub Releases page](https://github.com/waynetay/quicknote/releases/latest).
 
 1. Download the installer ZIP asset.
 2. Double-click the ZIP to extract `quicknote-macOS.dmg`.
@@ -17,6 +17,8 @@ Download the **v1.7 installer ZIP** from the [GitHub Releases page](https://gith
 
 
 ## Features
+
+- **Text formatting:** bold, italic, strikethrough, and underline in both Notepad and the floating Quick Note.
 
 - **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
 - **Floating Quick Note:** a compact window with a dedicated draggable header that can appear above other apps, including in full-screen Spaces. Toggle it from the Notepad toolbar button or with ⌥Q.
