@@ -26,7 +26,7 @@ Download the **v1.8 installer ZIP** from the [GitHub Releases page](https://gith
 - **Notepad:** press **Shift–Option–Q** or choose Notepad from the menu bar.
 - **Menu bar app:** quicknote stays available in the menu bar without keeping the Notepad window open. Use **Open at Login** to start it automatically.
 - **Independent notes:** the main Notepad and Quick Note save different text.
-- **Autosave:** notes persist locally after quitting and reopening.
+- **Autosave:** notes and rich formatting persist locally after quitting and reopening.
 - **Offline-first:** notes are stored on this Mac and are not uploaded to GitHub or a server.
 - **Floating note appearance:** quicknote uses the same solid dark surface as Notepad, with a subtle purple tint.
 
