@@ -181,6 +181,8 @@ private extension View {
 
 struct MainWindowView: View {
     @AppStorage("fullPadText") private var fullPadText = ""
+    @AppStorage("fullPadRTF") private var fullPadRTF = Data()
+    @StateObject private var editorState = RichTextEditorState()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -196,6 +198,9 @@ struct MainWindowView: View {
             .padding(.top, 20)
             .padding(.bottom, 14)
 
+            RichTextFormattingToolbar(state: editorState)
+                .padding(.horizontal, 16)
+
             ZStack {
                 if fullPadText.isEmpty {
                     Text("Start writing")
@@ -204,11 +209,7 @@ struct MainWindowView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .allowsHitTesting(false)
                 }
-                TextEditor(text: $fullPadText)
-                    .font(.system(size: 15))
-                    .lineSpacing(5)
-                    .scrollContentBackground(.hidden)
-                    .foregroundStyle(Color.white.opacity(0.94))
+                RichTextEditor(text: $fullPadText, richTextData: $fullPadRTF, state: editorState)
                     .accessibilityLabel("notepad")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -413,7 +414,8 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
 
 private struct QuickNoteWindowView: View {
     @AppStorage("quickNoteText") private var quickNoteText = ""
-    @FocusState private var noteIsFocused: Bool
+    @AppStorage("quickNoteRTF") private var quickNoteRTF = Data()
+    @StateObject private var editorState = RichTextEditorState()
     private let panelShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
     var body: some View {
@@ -421,6 +423,8 @@ private struct QuickNoteWindowView: View {
             NoteWindowHeader {
                 QuickNotePanelController.shared.hide()
             }
+
+            RichTextFormattingToolbar(state: editorState)
 
             ZStack {
                 if quickNoteText.isEmpty {
@@ -430,12 +434,7 @@ private struct QuickNoteWindowView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .allowsHitTesting(false)
                 }
-                TextEditor(text: $quickNoteText)
-                    .focused($noteIsFocused)
-                    .font(.system(size: 15))
-                    .lineSpacing(5)
-                    .scrollContentBackground(.hidden)
-                    .foregroundStyle(Color.white.opacity(0.94))
+                RichTextEditor(text: $quickNoteText, richTextData: $quickNoteRTF, state: editorState)
                     .accessibilityLabel("quicknote text")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -451,8 +450,8 @@ private struct QuickNoteWindowView: View {
         .background(Color.clear)
         .tint(AppStyle.accent)
         .onAppear {
-            DispatchQueue.main.async {
-                noteIsFocused = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                editorState.focus()
             }
         }
     }
