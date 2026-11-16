@@ -1,0 +1,35 @@
+name: Release quicknote v1.8
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event.head_commit.message == 'Publish quicknote v1.8'
+    runs-on: macos-26
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build macOS app and installer
+        run: bash scripts/build-app.sh
+
+      - name: Package ZIP installer
+        run: |
+          cd dist
+          zip -q -j quicknote-installer.zip quicknote-macOS.dmg
+
+      - name: Write release notes
+        run: |
+          printf '%s\n' \
+            '- Added bold, italic, underline, and strikethrough formatting to both notes' \
+            '- Preserved rich text formatting while keeping both notes separate and locally autosaved' > release-notes.md
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create 1.8 dist/quicknote-installer.zip --title "v1.8" --notes-file release-notes.md
