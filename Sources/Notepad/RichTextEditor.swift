@@ -81,7 +81,7 @@ final class RichTextEditorState: ObservableObject {
     }
 }
 
-private struct RichTextFormattingToolbar: View {
+struct RichTextFormattingToolbar: View {
     let state: RichTextEditorState
 
     var body: some View {
@@ -119,7 +119,7 @@ private struct RichTextFormattingToolbar: View {
     ) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: weight, design: .rounded).italic(italic))
+                .font(italic ? .system(size: 13, weight: weight, design: .rounded).italic() : .system(size: 13, weight: weight, design: .rounded))
                 .foregroundStyle(Color.white.opacity(0.88))
                 .frame(width: 30, height: 27)
                 .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 6))
