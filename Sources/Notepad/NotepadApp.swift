@@ -374,7 +374,7 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
             return
         }
 
-        let panel = NSPanel(
+        let panel = QuickNotePanel(
             contentRect: NSRect(x: 0, y: 0, width: 336, height: 376),
             styleMask: [.borderless, .resizable, .utilityWindow],
             backing: .buffered,
@@ -383,6 +383,7 @@ private final class QuickNotePanelController: NSObject, NSWindowDelegate {
         panel.title = "quicknote"
         panel.level = .floating
         panel.isFloatingPanel = true
+        panel.becomesKeyOnlyIfNeeded = false
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
         panel.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications]
