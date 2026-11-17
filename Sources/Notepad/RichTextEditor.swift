@@ -4,8 +4,27 @@ import SwiftUI
 
 @MainActor
 final class RichTextEditorState: ObservableObject {
+    @Published private(set) var isBoldActive = false
+    @Published private(set) var isItalicActive = false
+    @Published private(set) var isStrikethroughActive = false
+    @Published private(set) var isUnderlineActive = false
     weak var textView: NSTextView?
     var persistChanges: (() -> Void)?
+
+    func refreshActiveStyles() {
+        guard let textView else { return }
+        let range = textView.selectedRange()
+        var attributes = textView.typingAttributes
+        if range.length > 0, range.location < textView.string.utf16.count {
+            attributes = textView.attributedString().attributes(at: range.location, effectiveRange: nil)
+        }
+        let font = (attributes[.font] as? NSFont) ?? textView.font ?? .systemFont(ofSize: 15)
+        let traits = NSFontManager.shared.traits(of: font)
+        isBoldActive = traits.contains(.boldFontMask)
+        isItalicActive = traits.contains(.italicFontMask)
+        isStrikethroughActive = (attributes[.strikethroughStyle] as? NSNumber)?.intValue != 0
+        isUnderlineActive = (attributes[.underlineStyle] as? NSNumber)?.intValue != 0
+    }
 
     func focus() {
         guard let textView else { return }
@@ -38,6 +57,8 @@ final class RichTextEditorState: ObservableObject {
             storage.endEditing()
         }
         persistChanges?()
+        refreshActiveStyles()
+        refocus(textView)
     }
 
     func toggleUnderline() {
@@ -51,20 +72,14 @@ final class RichTextEditorState: ObservableObject {
     private func toggleStyle(_ key: NSAttributedString.Key) {
         guard let textView else { return }
         let range = textView.selectedRange()
-        let isActive: Bool
-        if range.length > 0, range.location < textView.string.utf16.count {
-            let current = textView.attributedString().attribute(key, at: range.location, effectiveRange: nil)
-            isActive = (current as? NSNumber)?.intValue != nil && (current as? NSNumber)?.intValue != 0
-        } else {
-            isActive = (textView.typingAttributes[key] as? NSNumber)?.intValue != nil &&
-                (textView.typingAttributes[key] as? NSNumber)?.intValue != 0
-        }
-
+        let attributes = currentAttributes(for: range, in: textView)
+        let isActive = (attributes[key] as? NSNumber)?.intValue != 0
         let newValue: Any? = isActive ? nil : NSNumber(value: NSUnderlineStyle.single.rawValue)
+
         if range.length == 0 {
-            var attributes = textView.typingAttributes
-            attributes[key] = newValue
-            textView.typingAttributes = attributes
+            var updated = textView.typingAttributes
+            updated[key] = newValue
+            textView.typingAttributes = updated
         } else if let storage = textView.textStorage {
             if let newValue {
                 storage.addAttribute(key, value: newValue, range: range)
@@ -73,29 +88,45 @@ final class RichTextEditorState: ObservableObject {
             }
         }
         persistChanges?()
+        refreshActiveStyles()
+        refocus(textView)
+    }
+
+    private func currentAttributes(for range: NSRange, in textView: NSTextView) -> [NSAttributedString.Key: Any] {
+        if range.length > 0, range.location < textView.string.utf16.count {
+            return textView.attributedString().attributes(at: range.location, effectiveRange: nil)
+        }
+        return textView.typingAttributes
     }
 
     private func font(at location: Int, in textView: NSTextView) -> NSFont? {
         guard location >= 0, location < textView.string.utf16.count else { return nil }
         return textView.attributedString().attribute(.font, at: location, effectiveRange: nil) as? NSFont
     }
+
+    private func refocus(_ textView: NSTextView) {
+        DispatchQueue.main.async { [weak textView] in
+            guard let textView else { return }
+            textView.window?.makeFirstResponder(textView)
+        }
+    }
 }
 
 struct RichTextFormattingToolbar: View {
-    let state: RichTextEditorState
+    @ObservedObject var state: RichTextEditorState
 
     var body: some View {
         HStack(spacing: 6) {
-            formatButton("B", name: "Bold", weight: .bold) {
+            formatButton("B", name: "Bold", isActive: state.isBoldActive, weight: .bold) {
                 state.toggleFontTrait(.boldFontMask)
             }
-            formatButton("I", name: "Italic", italic: true) {
+            formatButton("I", name: "Italic", isActive: state.isItalicActive, italic: true) {
                 state.toggleFontTrait(.italicFontMask)
             }
-            formatButton("S̶", name: "Strikethrough") {
+            formatButton("S̶", name: "Strikethrough", isActive: state.isStrikethroughActive) {
                 state.toggleStrikethrough()
             }
-            formatButton("U̲", name: "Underline") {
+            formatButton("U̲", name: "Underline", isActive: state.isUnderlineActive) {
                 state.toggleUnderline()
             }
             Spacer(minLength: 0)
@@ -113,6 +144,7 @@ struct RichTextFormattingToolbar: View {
     private func formatButton(
         _ title: String,
         name: String,
+        isActive: Bool,
         weight: Font.Weight = .medium,
         italic: Bool = false,
         action: @escaping () -> Void
@@ -120,13 +152,18 @@ struct RichTextFormattingToolbar: View {
         Button(action: action) {
             Text(title)
                 .font(italic ? .system(size: 13, weight: weight, design: .rounded).italic() : .system(size: 13, weight: weight, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.88))
+                .foregroundStyle(Color.white.opacity(isActive ? 1 : 0.78))
                 .frame(width: 30, height: 27)
-                .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 6))
+                .background(isActive ? Color(red: 0.482, green: 0.286, blue: 1).opacity(0.3) : Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 6))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(isActive ? Color(red: 0.65, green: 0.51, blue: 1).opacity(0.9) : Color.white.opacity(0.1), lineWidth: 1)
+                }
         }
         .buttonStyle(.plain)
         .help(name)
         .accessibilityLabel(name)
+        .accessibilityValue(isActive ? "On" : "Off")
     }
 }
 
@@ -140,14 +177,19 @@ struct RichTextEditor: NSViewRepresentable {
     }
 
     func makeNSView(context: Context) -> NSScrollView {
-        let scrollView = NSScrollView()
+        let scrollView = NSTextView.scrollableTextView()
         scrollView.drawsBackground = false
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
+        scrollView.contentView.drawsBackground = false
 
-        let textView = NSTextView()
+        guard let textView = scrollView.documentView as? NSTextView else {
+            return scrollView
+        }
         textView.delegate = context.coordinator
+        textView.isEditable = true
+        textView.isSelectable = true
         textView.isRichText = true
         textView.importsGraphics = false
         textView.usesFontPanel = false
@@ -156,6 +198,8 @@ struct RichTextEditor: NSViewRepresentable {
         textView.textColor = NSColor.white.withAlphaComponent(0.94)
         textView.insertionPointColor = NSColor(red: 0.482, green: 0.286, blue: 1, alpha: 1)
         textView.textContainerInset = NSSize(width: 0, height: 0)
+        textView.minSize = NSSize(width: 0, height: 0)
+        textView.maxSize = NSSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
         textView.autoresizingMask = [.width]
@@ -169,6 +213,7 @@ struct RichTextEditor: NSViewRepresentable {
         scrollView.documentView = textView
         state.textView = textView
         installPersistenceCallback(for: textView, coordinator: context.coordinator)
+        state.refreshActiveStyles()
         return scrollView
     }
 
@@ -216,6 +261,11 @@ struct RichTextEditor: NSViewRepresentable {
         func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
             persist(textView)
+            parent.state.refreshActiveStyles()
+        }
+
+        func textViewDidChangeSelection(_ notification: Notification) {
+            parent.state.refreshActiveStyles()
         }
 
         func persist(_ textView: NSTextView) {
