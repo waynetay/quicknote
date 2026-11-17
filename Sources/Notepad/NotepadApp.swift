@@ -350,6 +350,10 @@ private final class NotepadWindowController: NSObject, NSWindowDelegate {
     }
 }
 
+private final class QuickNotePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+}
+
 private final class QuickNotePanelController: NSObject, NSWindowDelegate {
     static let shared = QuickNotePanelController()
     func toggle() {
