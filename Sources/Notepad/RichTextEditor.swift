@@ -22,14 +22,30 @@ final class RichTextEditorState: ObservableObject {
         let traits = NSFontManager.shared.traits(of: font)
         isBoldActive = traits.contains(.boldFontMask)
         isItalicActive = traits.contains(.italicFontMask)
-        isStrikethroughActive = styleValue(.strikethroughStyle, in: attributes) != 0
-        isUnderlineActive = styleValue(.underlineStyle, in: attributes) != 0
+        isStrikethroughActive = selectionHasStyle(.strikethroughStyle, range: range, in: textView)
+        isUnderlineActive = selectionHasStyle(.underlineStyle, range: range, in: textView)
     }
 
     private func styleValue(_ key: NSAttributedString.Key, in attributes: [NSAttributedString.Key: Any]) -> Int {
         if let number = attributes[key] as? NSNumber { return number.intValue }
         if let value = attributes[key] as? Int { return value }
         return 0
+    }
+
+    private func selectionHasStyle(_ key: NSAttributedString.Key, range: NSRange, in textView: NSTextView) -> Bool {
+        guard range.length > 0, let storage = textView.textStorage else {
+            return styleValue(key, in: textView.typingAttributes) != 0
+        }
+        guard NSMaxRange(range) <= storage.length else { return false }
+        var allStyled = true
+        storage.enumerateAttribute(key, in: range) { value, _, stop in
+            let active = styleValue(key, in: [key: value as Any]) != 0
+            if !active {
+                allStyled = false
+                stop.pointee = true
+            }
+        }
+        return allStyled
     }
 
     func focus() {
@@ -81,8 +97,7 @@ final class RichTextEditorState: ObservableObject {
     private func toggleStyle(_ key: NSAttributedString.Key) {
         guard let textView else { return }
         let range = textView.selectedRange()
-        let attributes = currentAttributes(for: range, in: textView)
-        let isActive = styleValue(key, in: attributes) != 0
+        let isActive = selectionHasStyle(key, range: range, in: textView)
         let newValue: Any? = isActive ? nil : NSNumber(value: NSUnderlineStyle.single.rawValue)
 
         if range.length == 0 {
