@@ -22,13 +22,20 @@ final class RichTextEditorState: ObservableObject {
         let traits = NSFontManager.shared.traits(of: font)
         isBoldActive = traits.contains(.boldFontMask)
         isItalicActive = traits.contains(.italicFontMask)
-        isStrikethroughActive = (attributes[.strikethroughStyle] as? NSNumber)?.intValue != 0
-        isUnderlineActive = (attributes[.underlineStyle] as? NSNumber)?.intValue != 0
+        isStrikethroughActive = styleValue(.strikethroughStyle, in: attributes) != 0
+        isUnderlineActive = styleValue(.underlineStyle, in: attributes) != 0
+    }
+
+    private func styleValue(_ key: NSAttributedString.Key, in attributes: [NSAttributedString.Key: Any]) -> Int {
+        (attributes[key] as? NSNumber)?.intValue ?? 0
     }
 
     func focus() {
         guard let textView else { return }
-        textView.window?.makeFirstResponder(textView)
+        DispatchQueue.main.async { [weak textView] in
+            guard let textView, let window = textView.window else { return }
+            window.makeFirstResponder(textView)
+        }
     }
 
     func toggleFontTrait(_ trait: NSFontTraitMask) {
@@ -73,7 +80,7 @@ final class RichTextEditorState: ObservableObject {
         guard let textView else { return }
         let range = textView.selectedRange()
         let attributes = currentAttributes(for: range, in: textView)
-        let isActive = (attributes[key] as? NSNumber)?.intValue != 0
+        let isActive = styleValue(key, in: attributes) != 0
         let newValue: Any? = isActive ? nil : NSNumber(value: NSUnderlineStyle.single.rawValue)
 
         if range.length == 0 {
