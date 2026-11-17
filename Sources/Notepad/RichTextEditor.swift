@@ -39,7 +39,12 @@ final class RichTextEditorState: ObservableObject {
         guard NSMaxRange(range) <= storage.length else { return false }
         var allStyled = true
         storage.enumerateAttribute(key, in: range) { value, _, stop in
-            let active = styleValue(key, in: [key: value as Any]) != 0
+            let active: Bool
+            if let value {
+                active = styleValue(key, in: [key: value]) != 0
+            } else {
+                active = false
+            }
             if !active {
                 allStyled = false
                 stop.pointee = true
