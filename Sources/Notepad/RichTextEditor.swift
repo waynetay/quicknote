@@ -199,7 +199,7 @@ struct RichTextEditor: NSViewRepresentable {
         textView.insertionPointColor = NSColor(red: 0.482, green: 0.286, blue: 1, alpha: 1)
         textView.textContainerInset = NSSize(width: 0, height: 0)
         textView.minSize = NSSize(width: 0, height: 0)
-        textView.maxSize = NSSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+        textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
         textView.autoresizingMask = [.width]
