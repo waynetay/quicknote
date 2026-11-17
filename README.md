@@ -18,7 +18,7 @@ Download the **v1.8 installer ZIP** from the [GitHub Releases page](https://gith
 
 ## Features
 
-- **Text formatting:** bold, italic, strikethrough, and underline in both Notepad and the floating Quick Note.
+- **Text formatting:** bold, italic, strikethrough, and underline in both Notepad and the floating Quick Note. The toolbar highlights the active style.
 
 - **Notepad:** a spacious writing area with a simple "Start writing" placeholder.
 - **Floating Quick Note:** a compact window with a dedicated draggable header that can appear above other apps, including in full-screen Spaces. Toggle it from the Notepad toolbar button or with ⌥Q.
