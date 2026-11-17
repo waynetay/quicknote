@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    if: github.event.head_commit.message == 'Publish quicknote v1.8'
+    if: github.event.head_commit.message == 'Update v1.8 installer'
     runs-on: macos-26
     steps:
       - name: Check out source
@@ -29,7 +29,9 @@ jobs:
             '- Added bold, italic, underline, and strikethrough formatting to both notes' \
             '- Preserved rich text formatting while keeping both notes separate and locally autosaved' > release-notes.md
 
-      - name: Publish GitHub release
+      - name: Replace the v1.8 installer and keep the same notes
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create 1.8 dist/quicknote-installer.zip --title "v1.8" --notes-file release-notes.md
+        run: |
+          gh release upload 1.8 dist/quicknote-installer.zip --clobber
+          gh release edit 1.8 --title "v1.8" --notes-file release-notes.md
