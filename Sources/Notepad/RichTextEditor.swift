@@ -159,12 +159,12 @@ struct RichTextFormattingToolbar: View {
         Button(action: action) {
             Text(title)
                 .font(italic ? .system(size: 13, weight: weight, design: .rounded).italic() : .system(size: 13, weight: weight, design: .rounded))
-                .foregroundStyle(Color.white.opacity(isActive ? 1 : 0.78))
+                .foregroundStyle(isActive ? Color.black.opacity(0.88) : Color.white.opacity(0.72))
                 .frame(width: 30, height: 27)
-                .background(isActive ? Color(red: 0.482, green: 0.286, blue: 1).opacity(0.3) : Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 6))
+                .background(isActive ? Color.white.opacity(0.92) : Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 6))
                 .overlay {
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(isActive ? Color(red: 0.65, green: 0.51, blue: 1).opacity(0.9) : Color.white.opacity(0.1), lineWidth: 1)
+                        .stroke(isActive ? Color.white.opacity(0.95) : Color.white.opacity(0.12), lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
