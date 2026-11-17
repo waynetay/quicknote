@@ -27,7 +27,9 @@ final class RichTextEditorState: ObservableObject {
     }
 
     private func styleValue(_ key: NSAttributedString.Key, in attributes: [NSAttributedString.Key: Any]) -> Int {
-        (attributes[key] as? NSNumber)?.intValue ?? 0
+        if let number = attributes[key] as? NSNumber { return number.intValue }
+        if let value = attributes[key] as? Int { return value }
+        return 0
     }
 
     func focus() {
@@ -174,6 +176,15 @@ struct RichTextFormattingToolbar: View {
     }
 }
 
+private final class QuicknoteTextView: NSTextView {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func mouseDown(with event: NSEvent) {
+        window?.makeFirstResponder(self)
+        super.mouseDown(with: event)
+    }
+}
+
 struct RichTextEditor: NSViewRepresentable {
     @Binding var text: String
     @Binding var richTextData: Data
@@ -184,19 +195,20 @@ struct RichTextEditor: NSViewRepresentable {
     }
 
     func makeNSView(context: Context) -> NSScrollView {
-        let scrollView = NSTextView.scrollableTextView()
+        let scrollView = NSScrollView()
         scrollView.drawsBackground = false
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.contentView.drawsBackground = false
 
-        guard let textView = scrollView.documentView as? NSTextView else {
-            return scrollView
-        }
+        let textView = QuicknoteTextView(frame: .zero)
+        scrollView.documentView = textView
         textView.delegate = context.coordinator
         textView.isEditable = true
         textView.isSelectable = true
+        textView.isFieldEditor = false
+        textView.allowsUndo = true
         textView.isRichText = true
         textView.importsGraphics = false
         textView.usesFontPanel = false
